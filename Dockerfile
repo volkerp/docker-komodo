@@ -1,4 +1,4 @@
-FROM debian:stretch-slim
+FROM debian:stretch-slim 
 
 ENV BUILDDEPS ca-certificates curl build-essential git automake autoconf libtool pkg-config cmake
 
@@ -15,7 +15,11 @@ RUN set -ex; \
 
 RUN set -ex; \
   cd ~/komodo && \
-  ./zcutil/build.sh --disable-tests -j$(nproc)
+  ./zcutil/build.sh --disable-tests -j$(nproc); \
+  cd /; \
+  mv /root/komodo/src/komodod /usr/local/bin; \
+  mv /root/komodo/src/komodo-cli /usr/local/bin; \
+  rm -rf /root/komodo/src /root/komodo/depends /root/.ccache;
 
 ADD komodo.conf /root/komodo.conf.default
 
@@ -30,6 +34,6 @@ COPY docker-entrypoint.sh /
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-CMD ["/root/komodo/src/komodod"]
+CMD ["komodod"]
 
-HEALTHCHECK CMD ["src/komodo-cli", "getinfo"] 
+HEALTHCHECK CMD ["komodo-cli", "getinfo"] 
